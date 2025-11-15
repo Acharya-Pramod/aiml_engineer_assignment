@@ -1,1 +1,11 @@
+#Build and push image:
+gcloud builds submit --tag gcr.io/<PROJECT_ID>/member-qa
+#Deploy:
+gcloud run deploy member-qa \
+  --image gcr.io/<PROJECT_ID>/member-qa \
+  --platform managed \
+  --allow-unauthenticated \
+  --region europe-west1
+#You will receive a URL. Test:
+curl -G "https://<CLOUD_RUN_URL>/ask" --data-urlencode "question=When is Layla planning her trip to London?"
 
