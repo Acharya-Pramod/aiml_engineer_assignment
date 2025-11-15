@@ -1,1 +1,86 @@
+Bonus 2 — Data Insights (Anomalies & Inconsistencies Found)
 
+I analyzed the dataset returned by the /messages API and identified several interesting anomalies and inconsistencies:
+
+1. Inconsistent Message Field Names
+
+Different messages contain different fields for text content:
+
+message
+
+text
+
+content
+
+body
+
+Some wrapped under "data" objects
+
+Impact:
+A naive implementation would fail to extract text consistently. My solution handles all variants.
+
+2. Mixed Schema Structures
+
+The API sometimes returns:
+
+{ "items": [...] }
+
+{ "messages": [...] }
+
+Or directly a list [...]
+
+Impact:
+The service needs flexible normalization logic.
+
+3. Variation in Message Types
+
+Some records appear to be:
+
+Full sentences
+
+Metadata-like short messages (e.g., “ok”, “thanks”)
+
+Emoji-only messages
+
+System-generated entries
+
+Impact:
+Short/noisy messages reduce semantic relevance. I added a relevance threshold.
+
+4. Name Ambiguities
+
+Some messages reference:
+
+Single names (e.g., “Layla”)
+
+Full names
+
+Nicknames
+
+Users with similar names
+
+Impact:
+User reference resolution is approximate and purely textual.
+
+5. Inconsistent Date Formats
+
+Messages contain dates in formats such as:
+
+“April 12, 2025”
+
+“2025-04-12”
+
+“04/12/25”
+
+Impact:
+Extracting structured dates would require normalization, but out-of-scope for the current minimal solution.
+
+6. Missing or Partial Data
+
+Some users have rich message histories; others have:
+
+1–2 messages
+
+messages with no meaningful content
+
+incomplete event details (“I’ll be traveling soon”)
