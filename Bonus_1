@@ -1,1 +1,107 @@
+Below are several alternative architectures and design strategies I evaluated before choosing the final lightweight token-overlap method.
 
+1. Embedding-Based Retrieval (RAG)
+
+Idea:
+Convert all messages into vector embeddings (e.g., sentence-transformers or OpenAI embeddings) and use cosine similarity to retrieve the most relevant message for a question.
+
+Pros:
+
+Captures semantic meaning beyond keyword matching
+
+Handles paraphrasing well
+
+Robust for large datasets
+
+Cons:
+
+Requires an embedding model + vector store (FAISS, Pinecone, etc.)
+
+More complex deployment
+
+Slightly higher latency
+
+Reason Not Used:
+Assignment required a simple, publicly deployable service with minimal dependencies. A Jaccard similarity model is easier to run anywhere.
+
+2. Rule-Based NLP Extraction
+
+Idea:
+Use spaCy or regex to extract information (e.g., dates, locations, names, quantities) and build custom patterns like:
+
+“When is ___ traveling to ___?”
+
+“How many ___ does ___ have?”
+
+Pros:
+
+Very interpretable
+
+High precision for predictable question formats
+
+Cons:
+
+Low recall for variations in phrasing
+
+Hard to scale to many question types
+
+Fragile with noisy user-generated content
+
+Reason Not Used:
+Data has inconsistent structure and unstructured text, making handcrafted rules brittle.
+
+3. Small Fine-Tuned QA Model
+
+Idea:
+Fine-tune a distilled model (DistilBERT QA, MiniLM, etc.) to answer questions directly from message text.
+
+Pros:
+
+Strong accuracy
+
+End-to-end neural QA system
+
+Cons:
+
+Requires a labeled dataset of Q/A pairs (not provided)
+
+Harder compute requirements
+
+More complex deployment
+
+Reason Not Used:
+No training labels available. Overkill for this assignment.
+
+4. Retrieval with BM25 (Elasticsearch / Whoosh)
+
+Idea:
+Use a proper search index with BM25 ranking to score message relevance.
+
+Pros:
+
+Very strong baseline IR method
+
+Proven in production search systems
+
+Cons:
+
+Requires running a search engine (Elasticsearch/OpenSearch)
+
+Deployment becomes heavier
+
+Reason Not Used:
+The assignment emphasizes simplicity and lightweight deployment.
+
+Final Choice Justification
+
+I ultimately selected a lightweight token-overlap (Jaccard similarity) retrieval system because:
+
+Zero training required
+
+Fast and deterministic
+
+Small codebase
+
+Works with the unpredictable JSON formats from the /messages API
+
+Easy to deploy in any environment (Cloud Run / Render / Railway)
