@@ -1,1 +1,3 @@
-
+git add .
+git commit -m "Add Member QA service implementation"
+git push origin main
